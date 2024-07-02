@@ -5,7 +5,7 @@ module.exports = (options) => {
     entry: "./index.js",
     output: {
       filename: "bundle.js",
-      publicPath: "http://localhost:4202/",
+      publicPath: "auto",
       uniqueName: "child-react",
     },
     module: {
@@ -27,7 +27,7 @@ module.exports = (options) => {
     },
     plugins: [
       new ModuleFederationPlugin({
-        name: "childReact",
+        name: "reactChild",
         filename: "remoteEntry.js",
         exposes: {
           "./web-components": "./app.js",

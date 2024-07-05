@@ -1,4 +1,10 @@
 const ModuleFederationPlugin = require("webpack/lib/container/ModuleFederationPlugin");
+const path = require("path"); // Import the path module
+const webpack = require('webpack');
+const dotenv = require('dotenv');
+
+// Load environment variables from .env file, if present
+dotenv.config();
 
 module.exports = (options) => {
   return {
@@ -11,7 +17,7 @@ module.exports = (options) => {
     module: {
       rules: [
         {
-          test: /.js$/,
+          test: /\.(js|jsx)$/,
           exclude: /node_modules/,
           use: [
             {
@@ -20,8 +26,13 @@ module.exports = (options) => {
                 cacheDirectory: true,
                 presets: ["@babel/react", "@babel/env"],
               },
-            },
+            }
           ],
+        },,
+        {
+          // Add a rule for CSS files
+          test: /\.css$/,
+          use: ["style-loader", "css-loader"],
         },
       ],
     },
@@ -30,13 +41,21 @@ module.exports = (options) => {
         name: "reactChild",
         filename: "remoteEntry.js",
         exposes: {
-          "./web-components": "./app.js",
+          "./web-components": "./src/index.js",
         },
         shared: ["react", "react-dom"],
       }),
+      new webpack.DefinePlugin({
+        'process.env': JSON.stringify(process.env),
+      }),
     ],
     devServer: {
-      port: 4202,
+      port: 4204,
+    },
+    resolve: {
+      // Configure how modules are resolved.
+      modules: [path.resolve(__dirname, 'src'), 'node_modules'], // Add 'src' to the modules array
+      extensions: ['.js', '.jsx'], // Resolve these extensions
     },
   };
 };
